@@ -1,0 +1,31 @@
+Tema 1 SD - VMA
+
+Am inceput prin definirea structurilor aferente listelor dublu inlantuite.
+list_t(vma.h) este structura in care retin capul listei si dimensiunea acesteia.
+Astfel, am reusit sa creez un tip generic de lista pentru a ma putea folosi de ea atat la block-uri, cat si la miniblock-uri, folosind doar un simplu cast.
+Acest lucru m-a eliberat de scris cod duplicat.
+Primele functii din vma.c sunt despre alocat memorie pentru structurile necesare
+listelor, precum si adaugarea si stergerea din lista a unui element.
+
+Alloc_block cauta block-ul care contine adresa primita ca parametru din lista
+de block-uri, si daca nu exista deja creeaza un miniblock pe care il adauga
+la un nou block, care va si si el adaugat la randul lui in lista. Functia
+rearrange_list, ordoneaza crescator lista de block-uri dupa adresa de start
+a fiecaruia. Functia shrink_list cauta printre block-urile arenei cele care au
+adresa de final + 1 egala cu adresa de start a urmatorului block, asta insemnand
+ca practic ele se afla unul dupa celalalt. In acest caz, iau fiecare element
+din lista de miniblock-uri a block-ului urmator, si il adaug la lista block-ului
+curent, prin functia shrink_blocks.
+
+Free_block foloseste aceeasi idee ca alloc_block, numai ca fix pe invers. Cauta
+block-ul si miniblock-ul din care face parte adresa primita ca parametru,
+elibereaza memoria care o contine, si verifica daca block-ul din care facea
+parte ar trebui spart in 2 block-uri (task facut de split_block_if_necessary).
+
+Functiile read si write verifica permisiunile zonei de memorie, prin & logic cu
+masca. (PERM)00000110 & 00000010(WRITE_MASK) => 00000010, care e diferit de 0,
+lucru care inseamna ca avem permisiunea de a scrie in buffer. In acest mod
+am implementat si mprotect (mai clar se vede in main.c la ramura apelului).
+
+Pmap afiseaza prin functiile print_blocks, print_miniblock, count_miniblocks,
+get_occupied_memory, toate detaliile necesare pentru afisarea detaliata a memoriei.
